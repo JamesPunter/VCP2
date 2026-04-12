@@ -5,7 +5,11 @@
       "Bash(cp -r \"/Users/sepelshof/Downloads/VibeCoding/AB_Verhuizing_temp/.\" \"/Users/sepelshof/Downloads/VibeCoding/AB Verhuizing/\")",
       "Bash(rm -rf \"/Users/sepelshof/Downloads/VibeCoding/AB_Verhuizing_temp\")",
       "Bash(npm install:*)",
-      "Bash(npx shadcn@latest init -d)"
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:www.abverhuizingen.nl)",
+      "Bash(npx shadcn@latest add card badge separator)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)"
     ]
   }
 }
