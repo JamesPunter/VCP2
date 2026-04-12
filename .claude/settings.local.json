@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(cp -r \"/Users/sepelshof/Downloads/VibeCoding/AB_Verhuizing_temp/.\" \"/Users/sepelshof/Downloads/VibeCoding/AB Verhuizing/\")",
+      "Bash(rm -rf \"/Users/sepelshof/Downloads/VibeCoding/AB_Verhuizing_temp\")",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init -d)"
+    ]
+  }
+}
