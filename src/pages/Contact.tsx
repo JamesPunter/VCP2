@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { AnchorButton } from '@/components/ui/link-button'
+import { AnchorButton, LinkButton } from '@/components/ui/link-button'
 import { Badge } from '@/components/ui/badge'
 import { useReveal } from '@/hooks/useReveal'
+import { PageHero } from '@/components/page-hero'
 
 const CONTACT_ITEMS = [
   {
@@ -14,7 +16,7 @@ const CONTACT_ITEMS = [
     label: 'Mobiel',
     value: '06 2158 7273',
     href: 'tel:0621587273',
-    accent: 'bg-blue-50 text-blue-600',
+    accent: 'bg-neutral-100 text-neutral-800',
   },
   {
     icon: (
@@ -25,7 +27,7 @@ const CONTACT_ITEMS = [
     label: 'Kantoor',
     value: '020 625 35 13',
     href: 'tel:0206253513',
-    accent: 'bg-slate-100 text-slate-600',
+    accent: 'bg-neutral-200/80 text-neutral-800',
   },
   {
     icon: (
@@ -37,7 +39,7 @@ const CONTACT_ITEMS = [
     label: 'E-mail',
     value: 'info@studiolegarage.nl',
     href: 'mailto:info@studiolegarage.nl',
-    accent: 'bg-orange-50 text-orange-600',
+    accent: 'bg-neutral-100 text-neutral-800',
   },
   {
     icon: (
@@ -49,7 +51,7 @@ const CONTACT_ITEMS = [
     label: 'Adres',
     value: 'Veemarkt 31, 1019 DA Amsterdam',
     href: 'https://maps.google.com/?q=Veemarkt+31,+Amsterdam',
-    accent: 'bg-green-50 text-green-600',
+    accent: 'bg-neutral-100 text-neutral-800',
   },
 ]
 
@@ -69,26 +71,21 @@ export default function Contact() {
     setSubmitted(true)
   }
 
-  const inputClass = 'w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary transition-all'
+  const inputClass = 'w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900/15 focus:border-neutral-900 transition-all'
 
   return (
     <>
-      {/* HEADER */}
-      <section className="relative pt-32 pb-16 bg-foreground overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-primary/25 to-transparent" />
-        <div className="relative max-w-6xl mx-auto px-6">
-          <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-4">Contact</p>
-          <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
-            Neem contact op
-          </h1>
-          <p className="text-white/60 text-xl max-w-lg leading-relaxed">
-            Vragen over de studio, beschikbaarheid of tarieven? We zijn bereikbaar van 07:30 tot 23:00.
-          </p>
-        </div>
-      </section>
+      <PageHero size="default">
+        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Contact</p>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-4 max-w-3xl">
+          Neem contact op
+        </h1>
+        <p className="text-white/65 text-xl max-w-lg leading-relaxed">
+          Vragen over de studio, beschikbaarheid of tarieven? We zijn bereikbaar van 07:30 tot 23:00.
+        </p>
+      </PageHero>
 
-      {/* CONTACT CARDS */}
-      <section className="py-12 bg-secondary/40 border-b border-border">
+      <section className="py-12 md:py-14 bg-neutral-50 border-b border-neutral-200/80">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {CONTACT_ITEMS.map(({ icon, label, value, href, accent }) => (
@@ -97,14 +94,14 @@ export default function Contact() {
                 href={href}
                 target={href.startsWith('http') ? '_blank' : undefined}
                 rel={href.startsWith('http') ? 'noreferrer' : undefined}
-                className="bg-white rounded-2xl border border-border p-5 flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group"
+                className="bg-white rounded-3xl border border-neutral-200/90 p-5 flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group"
               >
-                <div className={`w-10 h-10 rounded-xl ${accent} flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-10 h-10 rounded-2xl ${accent} flex items-center justify-center flex-shrink-0`}>
                   {icon}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground font-medium mb-0.5">{label}</p>
-                  <p className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors truncate">{value}</p>
+                  <p className="text-xs text-neutral-500 font-medium mb-0.5">{label}</p>
+                  <p className="font-semibold text-neutral-900 text-sm group-hover:underline underline-offset-2 transition-colors truncate">{value}</p>
                 </div>
               </a>
             ))}
@@ -113,7 +110,7 @@ export default function Contact() {
       </section>
 
       {/* FORM + INFO */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div ref={ref1} className="reveal grid lg:grid-cols-2 gap-12">
 
@@ -121,11 +118,12 @@ export default function Contact() {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold mb-2">Stuur een bericht</h2>
               <p className="text-muted-foreground mb-7 leading-relaxed">
-                Wil je een vraag stellen of informatie ontvangen? Gebruik het formulier hieronder. Voor reserveringen gebruik je de <a href="/reserveren" className="text-primary font-medium hover:underline">reserveringspagina</a>.
+                Wil je een vraag stellen of informatie ontvangen? Gebruik het formulier hieronder. Voor reserveringen gebruik je de{' '}
+                <Link to="/reserveren" className="text-neutral-900 font-semibold hover:underline underline-offset-2">reserveringspagina</Link>.
               </p>
 
               {submitted ? (
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
+                <div className="bg-green-50 border border-green-200/80 rounded-3xl p-8 text-center">
                   <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                     <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-green-600">
                       <polyline points="20 6 9 17 4 12"/>
@@ -133,7 +131,7 @@ export default function Contact() {
                   </div>
                   <h3 className="font-bold text-foreground text-lg mb-2">Bericht ontvangen!</h3>
                   <p className="text-muted-foreground text-sm">We nemen zo snel mogelijk contact met je op.</p>
-                  <Button variant="outline" className="mt-5 rounded-xl"
+                  <Button variant="outline" className="mt-5 rounded-full border-2 border-neutral-900"
                     onClick={() => { setSubmitted(false); setForm({ naam: '', email: '', telefoon: '', bericht: '' }) }}>
                     Nieuw bericht
                   </Button>
@@ -175,7 +173,7 @@ export default function Contact() {
                       placeholder="Je vraag of opmerking..."
                       className={`${inputClass} resize-none`} />
                   </div>
-                  <Button type="submit" size="lg" className="w-full rounded-xl">
+                  <Button type="submit" size="lg" className="w-full rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
                     Verstuur bericht
                   </Button>
                 </form>
@@ -184,7 +182,7 @@ export default function Contact() {
 
             {/* Info */}
             <div className="space-y-5">
-              <div className="bg-foreground rounded-2xl p-7 text-white">
+              <div className="bg-neutral-950 rounded-3xl p-7 text-white shadow-lg">
                 <h3 className="font-bold text-white text-lg mb-4">Bereikbaarheid</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between border-b border-white/10 pb-3">
@@ -203,42 +201,42 @@ export default function Contact() {
                 <p className="text-white/40 text-xs mt-4">KvK Amsterdam: 33252574</p>
               </div>
 
-              <div className="bg-white border border-border rounded-2xl p-6">
-                <h3 className="font-bold text-foreground mb-2">Social media</h3>
-                <p className="text-sm text-muted-foreground mb-4">Volg ons voor inspiratie en updates:</p>
+              <div className="bg-neutral-50 border border-neutral-200/90 rounded-3xl p-6">
+                <h3 className="font-bold text-neutral-900 mb-2">Social media</h3>
+                <p className="text-sm text-neutral-600 mb-4">Volg ons voor inspiratie en updates:</p>
                 <div className="flex gap-3">
                   <AnchorButton
                     href="https://facebook.com/studiolegarage"
                     target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-xl flex-1 justify-center text-xs"
+                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
                   >
                     Facebook
                   </AnchorButton>
                   <AnchorButton
                     href="https://instagram.com/studiolegarage"
                     target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-xl flex-1 justify-center text-xs"
+                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
                   >
                     Instagram
                   </AnchorButton>
                   <AnchorButton
                     href="https://linkedin.com/company/studiolegarage"
                     target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-xl flex-1 justify-center text-xs"
+                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
                   >
                     LinkedIn
                   </AnchorButton>
                 </div>
               </div>
 
-              <div className="bg-secondary/60 border border-border rounded-2xl p-5 flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">
+              <div className="bg-[#f2f2f2] border border-neutral-200/90 rounded-3xl p-5 flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
                   Mobiel: 06 2158 7273
                 </Badge>
-                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
                   info@studiolegarage.nl
                 </Badge>
-                <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">
+                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
                   Veemarkt 31, Amsterdam
                 </Badge>
               </div>
@@ -255,13 +253,13 @@ export default function Contact() {
               <h3 className="text-white font-bold text-lg mb-1">Direct reserveren?</h3>
               <p className="text-white/60 text-sm">Gebruik ons boekingsformulier voor een aanvraag.</p>
             </div>
-            <AnchorButton
-              href="/reserveren"
+            <LinkButton
+              to="/reserveren"
               size="lg"
-              className="rounded-xl bg-white text-foreground hover:bg-white/90"
+              className="rounded-full bg-white text-neutral-900 hover:bg-white/90"
             >
               Naar reserveringspagina
-            </AnchorButton>
+            </LinkButton>
           </div>
         </div>
       </section>

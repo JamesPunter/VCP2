@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LinkButton, AnchorButton } from '@/components/ui/link-button'
 import { useReveal } from '@/hooks/useReveal'
+import { PageHero } from '@/components/page-hero'
 
 const FAQS = [
   {
@@ -41,22 +42,22 @@ function FaqItem({ vraag, antwoord }: { vraag: string; antwoord: string }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className={`border border-border rounded-2xl overflow-hidden transition-all duration-300 ${open ? 'shadow-md' : 'hover:shadow-sm'}`}>
+    <div className={`border border-neutral-200/90 rounded-3xl overflow-hidden transition-all duration-300 bg-white ${open ? 'shadow-md ring-1 ring-neutral-900/5' : 'hover:shadow-sm'}`}>
       <button
-        className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-secondary/30 transition-colors"
+        className="w-full flex items-center justify-between p-6 text-left bg-white hover:bg-neutral-50 transition-colors"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
       >
-        <span className="font-semibold text-foreground pr-4 text-base leading-snug">{vraag}</span>
-        <div className={`flex-shrink-0 w-7 h-7 rounded-full border-2 border-border flex items-center justify-center transition-all duration-300 ${open ? 'bg-foreground border-foreground rotate-45' : 'bg-white'}`}>
-          <svg width="12" height="12" fill="none" stroke={open ? 'white' : 'currentColor'} strokeWidth="2.5" viewBox="0 0 24 24">
+        <span className="font-semibold text-neutral-900 pr-4 text-base leading-snug">{vraag}</span>
+        <div className={`flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${open ? 'bg-neutral-900 border-neutral-900 rotate-45' : 'bg-white border-neutral-300'}`}>
+          <svg width="12" height="12" fill="none" stroke={open ? 'white' : 'currentColor'} strokeWidth="2.5" viewBox="0 0 24 24" className={open ? '' : 'text-neutral-700'}>
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
         </div>
       </button>
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-64' : 'max-h-0'}`}>
-        <div className="px-6 pb-6 bg-white border-t border-border">
-          <p className="text-muted-foreground leading-relaxed pt-4 text-sm">{antwoord}</p>
+        <div className="px-6 pb-6 bg-white border-t border-neutral-200/90">
+          <p className="text-neutral-600 leading-relaxed pt-4 text-sm">{antwoord}</p>
         </div>
       </div>
     </div>
@@ -69,22 +70,17 @@ export default function FAQ() {
 
   return (
     <>
-      {/* HEADER */}
-      <section className="relative pt-32 pb-20 bg-foreground overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
-        <div className="relative max-w-6xl mx-auto px-6">
-          <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-4">Veelgestelde vragen</p>
-          <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
-            Alles wat je<br />wil weten
-          </h1>
-          <p className="text-white/60 text-xl max-w-lg leading-relaxed">
-            Staat jouw vraag er niet bij? Stel hem via het contactformulier of bel ons direct.
-          </p>
-        </div>
-      </section>
+      <PageHero size="tall">
+        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Veelgestelde vragen</p>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-6 max-w-3xl">
+          Alles wat je<br />wil weten
+        </h1>
+        <p className="text-white/65 text-xl max-w-lg leading-relaxed">
+          Staat jouw vraag er niet bij? Stel hem via het contactformulier of bel ons direct.
+        </p>
+      </PageHero>
 
-      {/* FAQ ITEMS */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-neutral-50">
         <div className="max-w-3xl mx-auto px-6">
           <div ref={ref1} className="reveal space-y-3">
             {FAQS.map(({ vraag, antwoord }) => (
@@ -95,24 +91,24 @@ export default function FAQ() {
       </section>
 
       {/* STILL QUESTIONS */}
-      <section className="py-16 bg-secondary/40">
+      <section className="py-16 md:py-20 bg-white border-t border-neutral-200/80">
         <div ref={ref2} className="reveal max-w-3xl mx-auto px-6 text-center">
           <p className="text-4xl mb-5">💬</p>
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Vraag niet beantwoord?</h2>
-          <p className="text-muted-foreground mb-8 leading-relaxed">
+          <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-3">Vraag niet beantwoord?</h2>
+          <p className="text-neutral-600 mb-8 leading-relaxed">
             We horen graag van je. Stuur een bericht of bel ons direct — we reageren snel.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <LinkButton to="/contact" size="lg" className="rounded-xl">
+            <LinkButton to="/contact" size="lg" className="rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
               Stel je vraag
             </LinkButton>
-            <AnchorButton href="tel:0621587273" size="lg" variant="outline" className="rounded-xl">
+            <AnchorButton href="tel:0621587273" size="lg" variant="outline" className="rounded-full border-2 border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white">
               Bel: 06 2158 7273
             </AnchorButton>
           </div>
-          <p className="text-sm text-muted-foreground mt-5">
+          <p className="text-sm text-neutral-600 mt-5">
             Of mail naar{' '}
-            <a href="mailto:info@studiolegarage.nl" className="text-primary font-medium hover:underline">
+            <a href="mailto:info@studiolegarage.nl" className="text-neutral-900 font-semibold hover:underline underline-offset-2">
               info@studiolegarage.nl
             </a>
           </p>

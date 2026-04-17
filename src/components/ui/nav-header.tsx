@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "@/i18n/language-context";
+import { cn } from "@/lib/utils";
 
 type Position = {
   left: number;
@@ -9,15 +11,16 @@ type Position = {
 };
 
 const NAV_LINKS = [
-  { label: "Home", to: "/" },
-  { label: "Prijzen", to: "/prijzen" },
-  { label: "Reserveren", to: "/reserveren" },
-  { label: "Locatie", to: "/locatie" },
-  { label: "Contact", to: "/contact" },
-  { label: "FAQ", to: "/faq" },
+  { navKey: "home" as const, to: "/" },
+  { navKey: "prices" as const, to: "/prijzen" },
+  { navKey: "book" as const, to: "/reserveren" },
+  { navKey: "location" as const, to: "/locatie" },
+  { navKey: "contact" as const, to: "/contact" },
+  { navKey: "faq" as const, to: "/faq" },
 ];
 
-function NavHeader() {
+function NavHeader({ scrolled = false }: { scrolled?: boolean }) {
+  const { t } = useLanguage();
   const [position, setPosition] = useState<Position>({ left: 0, width: 0, opacity: 0 });
   const [hoveredTo, setHoveredTo] = useState<string | null>(null);
   const location = useLocation();
@@ -34,7 +37,10 @@ function NavHeader() {
 
   return (
     <ul
-      className="relative mx-auto flex w-fit rounded-full border-2 border-foreground bg-white p-1"
+      className={cn(
+        "relative mx-auto flex w-fit rounded-full border-2 border-neutral-900 bg-white p-1 shadow-sm transition-shadow duration-300",
+        scrolled && "shadow-lg ring-1 ring-black/10"
+      )}
       onMouseLeave={() => {
         setHoveredTo(null);
         // Snap cursor back to active tab
@@ -45,7 +51,7 @@ function NavHeader() {
         }
       }}
     >
-      {NAV_LINKS.map(({ label, to }) => (
+      {NAV_LINKS.map(({ navKey, to }) => (
         <Tab
           key={to}
           to={to}
@@ -58,7 +64,7 @@ function NavHeader() {
             if (el) tabRefs.current.set(to, el);
           }}
         >
-          {label}
+          {t.nav[navKey]}
         </Tab>
       ))}
       <Cursor position={position} />
@@ -98,8 +104,8 @@ const Tab = ({
     >
       <Link
         to={to}
-        className={`block px-4 py-2 text-sm font-medium uppercase select-none transition-colors duration-150 ${
-          isHovered || (isActive && !isAnyHovered) ? "text-white" : "text-foreground"
+        className={`block px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-wide select-none transition-colors duration-150 ${
+          isHovered || (isActive && !isAnyHovered) ? "text-white" : "text-neutral-900"
         }`}
       >
         {children}
@@ -113,7 +119,7 @@ const Cursor = ({ position }: { position: Position }) => {
     <motion.li
       animate={position}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="absolute z-0 top-1 h-[calc(100%-8px)] rounded-full bg-foreground pointer-events-none"
+      className="absolute z-0 top-1 h-[calc(100%-8px)] rounded-full bg-neutral-900 pointer-events-none"
     />
   );
 };

@@ -1,5 +1,6 @@
 import { LinkButton } from '@/components/ui/link-button'
 import { useReveal } from '@/hooks/useReveal'
+import { PageHero } from '@/components/page-hero'
 
 const OV_OPTIONS = [
   {
@@ -33,28 +34,23 @@ export default function Locatie() {
 
   return (
     <>
-      {/* HEADER */}
-      <section className="relative pt-32 pb-16 bg-foreground overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
-        <div className="relative max-w-6xl mx-auto px-6">
-          <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-4">Locatie</p>
-          <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight mb-4">
-            Amsterdam-Oost,<br />binnen de ring
-          </h1>
-          <p className="text-white/60 text-xl max-w-lg leading-relaxed">
-            Veemarkt 31, 1019 DA Amsterdam. Op nog geen 20 minuten fietsen van Centraal Station.
-          </p>
-        </div>
-      </section>
+      <PageHero size="default">
+        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Locatie</p>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-4 max-w-3xl">
+          Amsterdam-Oost,<br />binnen de ring
+        </h1>
+        <p className="text-white/65 text-xl max-w-lg leading-relaxed">
+          Veemarkt 31, 1019 DA Amsterdam. Op nog geen 20 minuten fietsen van Centraal Station.
+        </p>
+      </PageHero>
 
-      {/* MAP + INFO */}
-      <section className="py-20 bg-background">
+      <section className="py-16 md:py-20 bg-neutral-50">
         <div className="max-w-6xl mx-auto px-6">
           <div ref={ref1} className="reveal grid lg:grid-cols-5 gap-8 items-start">
 
             {/* Map — wider */}
             <div className="lg:col-span-3">
-              <div className="rounded-2xl overflow-hidden border border-border shadow-md aspect-[4/3]">
+              <div className="rounded-3xl overflow-hidden border border-neutral-200/90 shadow-md aspect-[4/3] bg-neutral-200">
                 <iframe
                   title="Studio Le Garage locatie"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2436.4!2d4.9278!3d52.3625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c6099f08b5c4e1%3A0x0!2sVeemarkt%2031%2C%201019%20DA%20Amsterdam!5e0!3m2!1snl!2snl!4v1234567890"
@@ -70,7 +66,7 @@ export default function Locatie() {
                 <a
                   href="https://maps.google.com/?q=Veemarkt+31,+Amsterdam"
                   target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline"
+                  className="inline-flex items-center gap-2 text-sm text-neutral-900 font-semibold hover:underline underline-offset-2"
                 >
                   <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -83,16 +79,16 @@ export default function Locatie() {
 
             {/* Info cards */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="bg-foreground rounded-2xl p-6 text-white">
+              <div className="bg-neutral-950 rounded-3xl p-6 text-white shadow-lg">
                 <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-3">Adres</p>
                 <p className="text-white font-bold text-lg">Veemarkt 31</p>
                 <p className="text-white/70">1019 DA Amsterdam</p>
                 <p className="text-white/50 text-sm mt-2">Amsterdam-Oost — binnen de A10 ring</p>
               </div>
 
-              <div className="bg-white border border-border rounded-2xl p-6">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">Parkeren</p>
-                <ul className="space-y-2 text-sm text-foreground">
+              <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-sm">
+                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">Parkeren</p>
+                <ul className="space-y-2 text-sm text-neutral-800">
                   <li className="flex items-start gap-2.5">
                     <span className="text-base">🅿️</span>
                     <span>Betaald parkeren direct buiten</span>
@@ -112,10 +108,10 @@ export default function Locatie() {
                 </ul>
               </div>
 
-              <div className="bg-secondary/60 border border-border rounded-2xl p-5 text-center">
+              <div className="bg-[#f2f2f2] border border-neutral-200/90 rounded-3xl p-5 text-center">
                 <p className="text-2xl mb-1">🚲</p>
-                <p className="font-semibold text-foreground text-sm">~20 minuten fietsen</p>
-                <p className="text-xs text-muted-foreground">vanaf Amsterdam Centraal Station</p>
+                <p className="font-semibold text-neutral-900 text-sm">~20 minuten fietsen</p>
+                <p className="text-xs text-neutral-600">vanaf Amsterdam Centraal Station</p>
               </div>
             </div>
           </div>
@@ -123,21 +119,21 @@ export default function Locatie() {
       </section>
 
       {/* GETTING THERE */}
-      <section className="py-20 bg-secondary/40">
+      <section className="py-16 md:py-20 bg-white border-t border-neutral-200/80">
         <div className="max-w-6xl mx-auto px-6">
           <div ref={ref2} className="reveal grid md:grid-cols-2 gap-12">
 
             {/* Public transport */}
             <div>
-              <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Openbaar vervoer</p>
-              <h2 className="text-2xl md:text-3xl font-bold mb-6">Met het OV</h2>
+              <p className="text-sm font-semibold text-neutral-900 uppercase tracking-widest mb-3">Openbaar vervoer</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Met het OV</h2>
               <div className="space-y-4">
                 {OV_OPTIONS.map(({ icon, title, desc }) => (
-                  <div key={title} className="bg-white rounded-xl border border-border p-5 flex items-start gap-4 hover:shadow-sm transition-shadow">
+                  <div key={title} className="bg-neutral-50 rounded-3xl border border-neutral-200/90 p-5 flex items-start gap-4 hover:shadow-sm transition-shadow">
                     <span className="text-2xl flex-shrink-0">{icon}</span>
                     <div>
-                      <h3 className="font-semibold text-foreground text-sm mb-1">{title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                      <h3 className="font-semibold text-neutral-900 text-sm mb-1">{title}</h3>
+                      <p className="text-sm text-neutral-600 leading-relaxed">{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -146,27 +142,27 @@ export default function Locatie() {
 
             {/* By car */}
             <div>
-              <p className="text-sm font-semibold text-primary uppercase tracking-widest mb-3">Met de auto</p>
-              <h2 className="text-2xl md:text-3xl font-bold mb-6">Rijroute vanaf A10</h2>
+              <p className="text-sm font-semibold text-neutral-900 uppercase tracking-widest mb-3">Met de auto</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Rijroute vanaf A10</h2>
               <div className="space-y-3">
                 {AUTO_STEPS.map((step, i) => (
-                  <div key={i} className="flex items-start gap-4 bg-white rounded-xl border border-border p-4">
-                    <div className="w-7 h-7 rounded-full bg-foreground text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                  <div key={i} className="flex items-start gap-4 bg-neutral-50 rounded-3xl border border-neutral-200/90 p-4">
+                    <div className="w-7 h-7 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">
                       {i + 1}
                     </div>
-                    <p className="text-sm text-foreground leading-relaxed pt-0.5">{step}</p>
+                    <p className="text-sm text-neutral-800 leading-relaxed pt-0.5">{step}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-5 bg-white border border-border rounded-xl p-4 text-sm text-muted-foreground">
-                <strong className="text-foreground">Tip:</strong> Via Afrit S114, direct na de Piet Heijntunnel. "Voor u bevindt zich een klein parkeerterrein — daar is onze studio gevestigd."
+              <div className="mt-5 bg-neutral-50 border border-neutral-200/90 rounded-3xl p-4 text-sm text-neutral-600">
+                <strong className="text-neutral-900">Tip:</strong> Via Afrit S114, direct na de Piet Heijntunnel. "Voor u bevindt zich een klein parkeerterrein — daar is onze studio gevestigd."
               </div>
             </div>
           </div>
 
           <div className="mt-12 text-center">
-            <LinkButton to="/reserveren" size="lg" className="rounded-xl">
+            <LinkButton to="/reserveren" size="lg" className="rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
               Reserveer de studio
             </LinkButton>
           </div>
