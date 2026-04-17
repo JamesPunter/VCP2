@@ -10,6 +10,8 @@
   --font-display: 'Encode Sans Condensed', 'Inter', system-ui, sans-serif;
   --font-semicond: 'Encode Sans Semi Condensed', 'Inter', system-ui, sans-serif;
   --font-body-dm: 'DM Sans', 'Inter', system-ui, sans-serif;
+  --font-montserrat: 'Montserrat', 'Inter', system-ui, sans-serif;
+  --font-roboto: 'Roboto', 'Inter', system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);

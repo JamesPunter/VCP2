@@ -1,54 +1,27 @@
-import { LinkButton, AnchorButton } from '@/components/ui/link-button'
-import { Badge } from '@/components/ui/badge'
+import { LinkButton } from '@/components/ui/link-button'
 import { useReveal } from '@/hooks/useReveal'
 import { useLanguage } from '@/i18n/language-context'
-import { PageHero } from '@/components/page-hero'
 
 const SLOT_META = [
   {
     id: 'ochtend' as const,
-    icon: '🌅',
-    tijd: '07:30 – 12:30',
-    duur: '5 uur',
-    prijs: '€ 287,50',
-    prijsInclCore: '€ 347,88',
-    featured: false,
+    tijd: '7:30 - 12:30',
+    prijs: '€287,50',
   },
   {
     id: 'middag' as const,
-    icon: '☀️',
-    tijd: '13:00 – 18:00',
-    duur: '5 uur',
-    prijs: '€ 287,50',
-    prijsInclCore: '€ 347,88',
-    featured: false,
-  },
-  {
-    id: 'dagdeel' as const,
-    icon: '📅',
-    tijd: '07:30 – 17:30',
-    duur: '10 uur',
-    prijs: '€ 497,50',
-    prijsInclCore: '€ 601,98',
-    featured: true,
+    tijd: '13:00 - 18:00',
+    prijs: '€287,50',
   },
   {
     id: 'avond' as const,
-    icon: '🌙',
-    tijd: '19:00 – 23:00',
-    duur: '4 uur',
-    prijs: '€ 195,00',
-    prijsInclCore: '€ 235,95',
-    featured: false,
+    tijd: '19:00 - 23:00',
+    prijs: '€195,00',
   },
   {
-    id: 'weekend' as const,
-    icon: '📆',
-    tijd: 'Op aanvraag',
-    duur: '—',
-    prijs: 'Op aanvraag',
-    prijsInclCore: '',
-    featured: false,
+    id: 'dagdeel' as const,
+    tijd: '7:30 - 17:30',
+    prijs: '€497,50',
   },
 ]
 
@@ -57,171 +30,140 @@ export default function Prijzen() {
   const p = t.prijzen
   const ref1 = useReveal()
   const ref2 = useReveal()
+  const ref3 = useReveal()
 
   const slots = SLOT_META.map((row) => {
     const copy = p.blocks[row.id]
-    const isWeekend = row.id === 'weekend'
-    const tijd = isWeekend ? p.onRequest : row.tijd
-    const duur = isWeekend ? '—' : row.duur
-    const prijs = isWeekend ? p.onRequest : row.prijs
-    const prijsIncl = isWeekend
-      ? p.contactForMore
-      : `${row.prijsInclCore} ${p.vatInclSuffix}`
     return {
       ...row,
       label: copy.label,
-      sublabel: copy.sublabel,
       desc: copy.desc,
-      tijd,
-      duur,
-      prijs,
-      prijsIncl,
     }
   })
 
   return (
     <>
-      <PageHero size="tall">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-6 max-w-4xl">
-          {p.heroTitle}
-        </h1>
-        <p className="text-white/65 text-lg md:text-xl max-w-2xl leading-relaxed">
-          {p.heroLead}
-        </p>
-        <p className="mt-4 text-white/45 text-sm max-w-2xl">
-          {p.vatNote}
-        </p>
-      </PageHero>
-
-      <section className="py-16 md:py-20 bg-neutral-50">
-        <div className="max-w-[90rem] mx-auto px-6">
-          <div ref={ref1} className="reveal">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {slots.map(({ id, label, sublabel, tijd, duur, prijs, prijsIncl, featured, icon, desc }) => (
-                <div
-                  key={id}
-                  className={
-                    featured
-                      ? 'relative rounded-3xl border-2 border-neutral-900 bg-neutral-950 text-white p-6 md:p-7 shadow-xl'
-                      : 'relative rounded-3xl border border-neutral-200/90 bg-[#f2f2f2] p-6 md:p-7 shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-md transition-shadow'
-                  }
-                >
-                  {featured && (
-                    <div className="absolute -top-3 left-5 z-10">
-                      <Badge className="rounded-full bg-neutral-900 text-white border-0 text-[10px] uppercase tracking-widest px-3 py-1 font-semibold shadow-md">
-                        {p.featuredBadge}
-                      </Badge>
-                    </div>
-                  )}
-
-                  <div className="flex items-start justify-between gap-3 mb-5">
-                    <div className="min-w-0">
-                      <span className="text-2xl mb-2 block">{icon}</span>
-                      <h2 className={`text-lg font-bold ${featured ? 'text-white' : 'text-neutral-900'}`}>
-                        {label}
-                      </h2>
-                      <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest mt-0.5 ${featured ? 'text-white/45' : 'text-neutral-500'}`}>
-                        {sublabel}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className={`text-2xl md:text-3xl font-bold tabular-nums ${featured ? 'text-white' : 'text-neutral-900'}`}>
-                        {prijs}
-                      </p>
-                      <p className={`text-[11px] md:text-xs mt-0.5 ${featured ? 'text-white/50' : 'text-neutral-500'}`}>
-                        {prijsIncl}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className={`flex flex-wrap items-center gap-2 sm:gap-4 text-sm mb-4 pb-4 border-b ${featured ? 'border-white/15' : 'border-neutral-300/80'}`}>
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className={featured ? 'text-white/55 shrink-0' : 'text-neutral-500 shrink-0'}>
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                      </svg>
-                      <span className={featured ? 'text-white/75' : 'text-neutral-600'}>{tijd}</span>
-                    </div>
-                    {duur !== '—' && (
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${featured ? 'bg-white/12 text-white/75' : 'bg-white text-neutral-600 border border-neutral-200/80'}`}>
-                        {duur}
-                      </span>
-                    )}
-                  </div>
-
-                  <p className={`text-sm leading-relaxed ${featured ? 'text-white/70' : 'text-neutral-600'}`}>
-                    {desc}
-                  </p>
-
-                  <div className="mt-6">
-                    <LinkButton
-                      to="/reserveren"
-                      className={
-                        featured
-                          ? 'w-full justify-center rounded-full bg-white text-neutral-900 hover:bg-white/90 border-0'
-                          : 'w-full justify-center rounded-full border-2 border-neutral-900 text-neutral-900 bg-transparent hover:bg-neutral-900 hover:text-white'
-                      }
-                      variant={featured ? undefined : 'outline'}
-                    >
-                      {id === 'weekend' ? p.weekendContact : p.reserveCta}
-                    </LinkButton>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      <section className="relative bg-white pt-32 pb-12 md:pb-16">
+        <div ref={ref1} className="reveal max-w-5xl mx-auto px-6 text-center">
+          <h1 className="font-semicond font-black text-black text-5xl sm:text-6xl md:text-7xl leading-[1.05] tracking-tight">
+            {p.heroTitle}
+          </h1>
+          <p className="mt-8 font-body-dm font-semibold text-black text-xl sm:text-2xl md:text-[30px] leading-[1.15] tracking-[-0.02em] max-w-3xl mx-auto">
+            {p.heroLead}
+          </p>
+          <p className="mt-6 font-body-dm font-semibold text-[#595858] text-base sm:text-lg md:text-xl leading-[1.15] tracking-[-0.02em]">
+            {p.vatNote}
+          </p>
         </div>
       </section>
 
-      <section className="py-16 md:py-20 bg-white border-t border-neutral-200/80">
+      <section className="pb-20 md:pb-24 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div ref={ref2} className="reveal">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">{p.includedHeading}</h2>
-                <p className="text-neutral-600 leading-relaxed mb-8">
-                  {p.includedLead}
-                </p>
-                <ul className="space-y-3">
-                  {p.includedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-neutral-900 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg width="10" height="10" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      </div>
-                      <span className="text-sm text-neutral-800">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+              {slots.map(({ id, label, tijd, prijs, desc }) => {
+                const isDark = id === 'dagdeel'
+                return (
+                  <div
+                    key={id}
+                    className={[
+                      'relative rounded-[4px] border px-4 py-6 md:px-4 md:py-7 text-center flex flex-col items-center',
+                      'shadow-[0_4px_5px_1px_rgba(193,193,193,0.35)]',
+                      isDark
+                        ? 'bg-[#2c3140] border-[#2c3140] text-white'
+                        : 'bg-white border-[#dbdbdb]',
+                    ].join(' ')}
+                  >
+                    <h2
+                      className={[
+                        'font-body-dm font-semibold text-lg md:text-xl leading-tight tracking-[-0.02em]',
+                        isDark ? 'text-white' : 'text-black',
+                      ].join(' ')}
+                    >
+                      {label}
+                    </h2>
 
-              <div className="space-y-4">
-                <div className="bg-neutral-50 border border-neutral-200/80 rounded-3xl p-6 md:p-7">
-                  <h3 className="font-bold text-neutral-900 mb-3">{p.weekendTitle}</h3>
-                  <p className="text-sm text-neutral-600 leading-relaxed mb-5">
-                    {p.weekendBody}
-                  </p>
-                  <AnchorButton href="mailto:info@studiolegarage.nl" variant="outline" className="rounded-full w-full justify-center border-2 border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white">
-                    {p.weekendBtn}
-                  </AnchorButton>
-                </div>
+                    <p
+                      className={[
+                        'mt-2 font-body-dm font-bold text-3xl md:text-[2rem] leading-none tabular-nums tracking-[-0.02em]',
+                        isDark ? 'text-white' : 'text-black',
+                      ].join(' ')}
+                    >
+                      {prijs}
+                    </p>
 
-                <div className="bg-neutral-50 border border-neutral-200/80 rounded-3xl p-6 md:p-7">
-                  <h3 className="font-bold text-neutral-900 mb-3">{p.gearTitle}</h3>
-                  <p className="text-sm text-neutral-600 leading-relaxed">
-                    {p.gearBody}
-                  </p>
-                </div>
+                    <p
+                      className={[
+                        'mt-3 font-montserrat font-medium text-xs md:text-sm',
+                        isDark ? 'text-[#dddddd]' : 'text-[#747474]',
+                      ].join(' ')}
+                    >
+                      {tijd}
+                    </p>
 
-                <div className="bg-neutral-950 rounded-3xl p-6 md:p-7 text-white">
-                  <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-2">{p.ratesHelp}</p>
-                  <p className="font-bold text-lg mb-1">
-                    <a href="tel:0621587273" className="hover:text-white/85 transition-colors">06 2158 7273</a>
-                  </p>
-                  <p className="text-white/45 text-sm">{p.ratesHours}</p>
-                </div>
-              </div>
+                    <div className="mt-4 w-full flex justify-center">
+                      <LinkButton
+                        to="/reserveren"
+                        variant="ghost"
+                        className={[
+                          'inline-flex items-center justify-center rounded-[3px] border-2 border-solid h-10 w-full max-w-[200px]',
+                          'font-montserrat font-bold text-xs md:text-sm transition-colors px-2',
+                          isDark
+                            ? 'border-[#1f41ff] bg-[#1f41ff] text-white hover:border-[#1a38e0] hover:bg-[#1a38e0]'
+                            : 'border-[#1f41ff] bg-transparent text-[#1f41ff] hover:border-[#1f41ff] hover:bg-[#1f41ff] hover:text-white',
+                        ].join(' ')}
+                      >
+                        {p.reserveCta}
+                      </LinkButton>
+                    </div>
+
+                    <div
+                      className={[
+                        'mt-5 h-px w-20',
+                        isDark ? 'bg-white/40' : 'bg-[#dbdbdb]',
+                      ].join(' ')}
+                      aria-hidden
+                    />
+
+                    <p
+                      className={[
+                        'mt-3 font-roboto font-medium text-xs md:text-sm leading-snug max-w-[200px]',
+                        isDark ? 'text-[#dddddd]' : 'text-[#747474]',
+                      ].join(' ')}
+                    >
+                      {desc}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+
+            <p className="mt-10 md:mt-12 pt-8 md:pt-10 border-t border-[#dbdbdb] text-center max-w-2xl mx-auto">
+              <a
+                href="mailto:info@studiolegarage.nl"
+                className="font-body-dm text-sm md:text-[15px] text-[#595858] hover:text-[#1f41ff] transition-colors underline-offset-[3px] decoration-[#dbdbdb]/80 hover:decoration-[#1f41ff]"
+              >
+                {p.weekendUnderCards}
+              </a>
+            </p>
+
+            <div
+              ref={ref3}
+              className="reveal mt-14 md:mt-20 max-w-md mx-auto text-center"
+            >
+              <h2 className="font-body-dm font-semibold text-black text-xl md:text-2xl tracking-[-0.02em] mb-6 md:mb-8">
+                {p.includedHeading}
+              </h2>
+              <ul className="space-y-3.5 text-left">
+                {p.includedItems.map((item) => (
+                  <li
+                    key={item}
+                    className="font-roboto text-[15px] text-[#747474] leading-relaxed pl-4 border-l border-[#e8e8e8] hover:border-[#1f41ff]/35 transition-colors"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

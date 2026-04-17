@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/i18n/language-context";
 
@@ -7,12 +8,23 @@ const heroPublicUrl = (filename: string) =>
   `${import.meta.env.BASE_URL}${filename}`;
 
 const HERO_IMAGE = {
-  file: "home-hero-dance.jpg",
-  alt: "Zwart-witfoto van tieners die een dansroutine repeteren op een podium.",
+  file: "actor-front-camera-audition.jpg",
+  alt: "Acteur voor een camera tijdens een auditie-opname in de studio.",
 };
 
 export default function Home() {
   const { t } = useLanguage();
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setHasScrolled(window.scrollY > 12);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="bg-white">
@@ -20,7 +32,7 @@ export default function Home() {
         className="relative w-full overflow-hidden bg-black"
         aria-label="Studio Le Garage hero"
       >
-        <div className="relative aspect-[1280/650] min-h-[560px] w-full">
+        <div className="relative min-h-dvh w-full">
           <img
             src={heroPublicUrl(HERO_IMAGE.file)}
             alt={HERO_IMAGE.alt}
@@ -75,8 +87,13 @@ export default function Home() {
       </section>
 
       <section
-        className="w-full bg-[#1f41ff] text-white"
+        className={`w-full bg-[#1f41ff] text-white transition-[max-height,opacity] duration-300 ease-out motion-reduce:transition-none ${
+          hasScrolled
+            ? "max-h-[28rem] opacity-100 md:max-h-[7rem]"
+            : "pointer-events-none max-h-0 overflow-hidden opacity-0"
+        }`}
         aria-label="Contactgegevens"
+        aria-hidden={!hasScrolled}
       >
         <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-2 px-6 py-4 text-[clamp(0.95rem,1.4vw,1.25rem)] font-semibold tracking-[-0.02em] md:flex-row md:gap-6 md:py-[18px]">
           <p

@@ -37,25 +37,15 @@ export const STRINGS = {
       infoAddress: 'Veemarkt 31 - 1019 DA Amsterdam',
     },
     prijzen: {
-      heroTitle: 'Onze prijzen, per dagdeel of een hele dag!',
+      heroTitle: 'Onze prijzen',
       heroLead:
         'Wij werken met vaste tijdblokken. Kies het blok dat het beste bij jouw productie past.',
       vatNote: 'Alle tarieven zijn exclusief 21% BTW, tenzij anders vermeld.',
       featuredBadge: 'Meest gekozen',
       reserveCta: 'Reserveer dit blok',
-      weekendContact: 'Neem contact op',
+      weekendUnderCards:
+        'Wilt u gebruik maken van de studio in het weekend, neem contact met ons op.',
       includedHeading: 'Alles wat je nodig hebt',
-      includedLead:
-        'Elk tijdblok geeft je toegang tot de volledige studio met alle bijbehorende faciliteiten. Geen extra\'s, geen verborgen kosten.',
-      weekendTitle: 'Weekendboekingen',
-      weekendBody:
-        'Op zaterdag en zondag zijn tarieven op aanvraag. Neem contact met ons op voor beschikbaarheid en prijzen. Op zondag is parkeren gratis.',
-      weekendBtn: 'Weekend aanvragen',
-      gearTitle: 'Specialistisch materiaal',
-      gearBody:
-        'Heb je naast de standaard uitrusting extra apparatuur nodig? Dat is in overleg te regelen via onze partners. Vermeld je wensen bij de boeking.',
-      ratesHelp: 'Vragen over tarieven?',
-      ratesHours: '07:30 – 23:00, ook in het weekend',
       blocks: {
         ochtend: {
           label: 'Ochtend',
@@ -77,28 +67,17 @@ export const STRINGS = {
           sublabel: 'Evening',
           desc: 'Geschikt voor avondopnames, events en presentaties.',
         },
-        weekend: {
-          label: 'Weekend',
-          sublabel: 'Za & Zo',
-          desc: 'Weekendtarieven worden op aanvraag bepaald. Gratis parkeren op zondag.',
-        },
       },
       vatInclSuffix: 'incl. BTW',
       onRequest: 'Op aanvraag',
       contactForMore: 'Neem contact op',
       includedItems: [
-        'Gebruik van de volledige studio (60m²)',
-        'Mobiele dansvloer (40m²) met spiegelwand',
-        'Koffie en thee',
-        'Keuken en toilet op begane grond',
-        'Elektra en driepolige stroom',
-        'Studio Host aanwezig voor ondersteuning',
-        'Gratis laden en lossen voor de deur',
-        'Standaard statieven en C-stands',
-        'Basisverlichting aanwezig',
+        'Studio 60 m² met dansvloer (40 m²) en spiegelwand',
+        'Keuken, toilet, koffie en thee',
+        'Elektra, driefasestroom en gratis WiFi',
+        'Studio Host tijdens je tijdblok',
+        'Laden en lossen voor de deur; basis uitrusting aanwezig',
       ],
-      gearFootnote:
-        'Heb je naast de standaard uitrusting extra apparatuur nodig? Dat is in overleg te regelen via onze partners. Vermeld je wensen bij de boeking.',
     },
   },
   en: {
@@ -143,19 +122,9 @@ export const STRINGS = {
       vatNote: 'All rates are exclusive of 21% VAT, unless stated otherwise.',
       featuredBadge: 'Most popular',
       reserveCta: 'Book this slot',
-      weekendContact: 'Contact us',
+      weekendUnderCards:
+        'Would you like to use the studio at the weekend? Please contact us.',
       includedHeading: 'Everything you need',
-      includedLead:
-        'Each time block gives you access to the full studio with all associated facilities. No extras, no hidden costs.',
-      weekendTitle: 'Weekend bookings',
-      weekendBody:
-        'On Saturday and Sunday, rates are on request. Contact us for availability and prices. Parking is free on Sundays.',
-      weekendBtn: 'Request weekend',
-      gearTitle: 'Specialist equipment',
-      gearBody:
-        'Need extra equipment beyond the standard kit? We can arrange this with our partners. Note your requirements when booking.',
-      ratesHelp: 'Questions about rates?',
-      ratesHours: '07:30 – 23:00, including weekends',
       blocks: {
         ochtend: {
           label: 'Morning',
@@ -177,28 +146,17 @@ export const STRINGS = {
           sublabel: 'Avond',
           desc: 'Suitable for evening shoots, events and presentations.',
         },
-        weekend: {
-          label: 'Weekend',
-          sublabel: 'Sat & Sun',
-          desc: 'Weekend rates are determined on request. Free parking on Sundays.',
-        },
       },
       vatInclSuffix: 'incl. VAT',
       onRequest: 'On request',
       contactForMore: 'Contact us',
       includedItems: [
-        'Full studio use (60m²)',
-        'Mobile dance floor (40m²) with mirror wall',
-        'Coffee and tea',
-        'Kitchen and toilet on ground floor',
-        'Electricity and three-phase power',
-        'Studio Host present for support',
-        'Free loading and unloading at the door',
-        'Standard tripods and C-stands',
-        'Basic lighting available',
+        '60 m² studio with dance floor (40 m²) and mirror wall',
+        'Kitchen, toilet, coffee and tea',
+        'Power, three-phase electricity and free WiFi',
+        'Studio Host during your time slot',
+        'Loading at the door; basic kit on site',
       ],
-      gearFootnote:
-        'Do you need additional equipment beyond the standard kit? This can be arranged through our partners. Note your requirements when booking.',
     },
   },
 } as const
