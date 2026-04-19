@@ -1,246 +1,386 @@
-import { useState } from 'react'
+import { useId, useMemo, useState } from 'react'
+import { format, startOfToday } from 'date-fns'
+import { nl } from 'date-fns/locale'
+import { CalendarIcon } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { AnchorButton } from '@/components/ui/link-button'
+import { Calendar } from '@/components/ui/calendar'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Textarea } from '@/components/ui/textarea'
+import { BookingMonthCaption } from '@/components/booking-month-caption'
 import { useReveal } from '@/hooks/useReveal'
-import { PageHero } from '@/components/page-hero'
+import { cn } from '@/lib/utils'
+
+const CALENDAR_START_MONTH = new Date(2020, 0)
 
 type FormState = {
   naam: string
   bedrijf: string
   email: string
   telefoon: string
-  datum: string
   tijdblok: string
   productie: string
 }
 
-const TIJDBLOKKEN = [
-  { value: 'ochtend', label: 'Ochtend / Morning (07:30 – 12:30) — € 287,50 excl. BTW' },
-  { value: 'middag', label: 'Middag / Afternoon (13:00 – 18:00) — € 287,50 excl. BTW' },
-  { value: 'dagdeel', label: 'Dagtarief / Full Day (07:30 – 17:30) — € 497,50 excl. BTW' },
-  { value: 'avond', label: 'Avond / Evening (19:00 – 23:00) — € 195,00 excl. BTW' },
-  { value: 'weekend', label: 'Weekend (Za/Zo) — Op aanvraag / On request' },
+const TIME_SLOTS: { value: string; title: string; tijd: string; prijs: string }[] = [
+  { value: 'ochtend', title: 'Ochtend', tijd: '07:30 – 12:30', prijs: '€287,50' },
+  { value: 'middag', title: 'Middag', tijd: '13:00 – 18:00', prijs: '€287,50' },
+  { value: 'avond', title: 'Avond', tijd: '19:00 – 23:00', prijs: '€195,00' },
+  { value: 'dagdeel', title: 'Hele dag', tijd: '07:30 – 17:30', prijs: '€497,50' },
+  { value: 'weekend', title: 'Weekend', tijd: 'Za / Zo', prijs: 'Op aanvraag' },
 ]
 
+const WEEKEND_DAY_BLOK_VALUES = ['ochtend', 'middag', 'avond', 'dagdeel'] as const
+
+function isCalendarWeekend(date: Date): boolean {
+  const d = date.getDay()
+  return d === 0 || d === 6
+}
+
+const labelClass =
+  'font-body-dm font-semibold text-black text-sm tracking-[-0.02em] mb-1.5'
+
+const controlBase =
+  'rounded-[4px] border border-[#dbdbdb] bg-white text-sm text-black placeholder:text-[#747474] shadow-[0_2px_4px_rgba(0,0,0,0.04)] focus-visible:border-[#1f41ff] focus-visible:ring-1 focus-visible:ring-[#1f41ff]/30'
+
 export default function Reserveren() {
-  const ref1 = useReveal()
+  const refHero = useReveal()
+  const refForm = useReveal()
+  const idBase = useId()
+
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [calendarOpen, setCalendarOpen] = useState(false)
 
   const [form, setForm] = useState<FormState>({
     naam: '',
     bedrijf: '',
     email: '',
     telefoon: '',
-    datum: '',
     tijdblok: '',
     productie: '',
   })
   const [submitted, setSubmitted] = useState(false)
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  const selectedSlot = useMemo(
+    () => TIME_SLOTS.find((s) => s.value === form.tijdblok),
+    [form.tijdblok],
+  )
+
+  const displayedTimeSlots = useMemo(() => {
+    if (!selectedDate) return []
+    if (isCalendarWeekend(selectedDate)) {
+      return TIME_SLOTS.filter((s) =>
+        (WEEKEND_DAY_BLOK_VALUES as readonly string[]).includes(s.value),
+      )
+    }
+    return TIME_SLOTS.filter((s) => s.value !== 'weekend')
+  }, [selectedDate])
+
+  const weekendDayPricing = Boolean(selectedDate && isCalendarWeekend(selectedDate))
+
+  const kostenSummary = useMemo(() => {
+    if (!selectedSlot || !selectedDate) {
+      return { bedrag: '—' as string, showVatNote: false }
+    }
+    if (form.tijdblok === 'weekend') {
+      return { bedrag: 'Op aanvraag', showVatNote: false }
+    }
+    if (weekendDayPricing && (WEEKEND_DAY_BLOK_VALUES as readonly string[]).includes(form.tijdblok)) {
+      return { bedrag: 'Op aanvraag', showVatNote: false }
+    }
+    return { bedrag: selectedSlot.prijs, showVatNote: true }
+  }, [selectedSlot, selectedDate, form.tijdblok, weekendDayPricing])
+
+  const calendarEndMonth = useMemo(() => new Date(new Date().getFullYear() + 3, 11), [])
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  function handleDateSelect(date: Date | undefined) {
+    setSelectedDate(date)
+    setCalendarOpen(false)
+    setForm((prev) => ({ ...prev, tijdblok: '' }))
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!selectedDate || !form.tijdblok) return
     setSubmitted(true)
   }
 
-  const inputClass = 'w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900/15 focus:border-neutral-900 transition-all'
+  const datumLabel = selectedDate
+    ? format(selectedDate, 'd MMM yyyy', { locale: nl })
+    : 'Datum'
 
   return (
     <>
-      <PageHero size="default">
-        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Booking</p>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-4 max-w-3xl">
-          Reserveer / Book<br />de Studio
-        </h1>
-        <p className="text-white/65 text-lg max-w-lg leading-relaxed">
-          Vul het formulier in voor een boekingsaanvraag. We nemen zo snel mogelijk contact met je op.
-          <span className="block text-white/45 text-sm mt-2">
-            Fill out the form below for a booking request.
-          </span>
-        </p>
-      </PageHero>
+      {!submitted ? (
+        <section className="relative bg-white pt-32 pb-10 md:pb-14">
+          <div ref={refHero} className="reveal max-w-5xl mx-auto px-6 text-center">
+            <h1 className="font-semicond font-black text-black text-5xl sm:text-6xl md:text-7xl leading-[1.05] tracking-tight">
+              Reserveer de studio
+            </h1>
+            <p className="mt-6 md:mt-8 font-body-dm font-semibold text-black text-lg sm:text-xl md:text-2xl leading-[1.15] tracking-[-0.02em] max-w-3xl mx-auto">
+              Vul het formulier in voor een boekingsaanvraag. We nemen zo snel mogelijk contact met je op.
+            </p>
+          </div>
+        </section>
+      ) : null}
 
-      <section className="py-16 md:py-20 bg-neutral-50">
-        <div className="max-w-5xl mx-auto px-6">
-          <div ref={ref1} className="reveal grid lg:grid-cols-3 gap-10">
-
-            {/* Form — 2/3 width */}
-            <div className="lg:col-span-2">
-              {submitted ? (
-                <div className="bg-green-50 border border-green-200/80 rounded-3xl p-10 text-center">
-                  <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-green-600">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <h3 className="font-bold text-foreground text-xl mb-2">Aanvraag ontvangen!</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-                    Bedankt voor je boekingsaanvraag. We nemen zo snel mogelijk contact met je op ter bevestiging.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Urgent? Bel <a href="tel:0621587273" className="text-neutral-900 font-semibold underline-offset-2 hover:underline">06 2158 7273</a>
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="mt-6 rounded-full border-2 border-neutral-900"
-                    onClick={() => {
-                      setSubmitted(false)
-                      setForm({ naam: '', bedrijf: '', email: '', telefoon: '', datum: '', tijdblok: '', productie: '' })
-                    }}
+      <section
+        className={cn(
+          submitted
+            ? 'min-h-[min(85dvh,calc(100dvh-8rem))] bg-[#f5f5f5] py-16 md:py-24 lg:py-32 pt-28 md:pt-36'
+            : 'bg-white pb-16 md:pb-24',
+        )}
+      >
+        <div className={cn('mx-auto px-6', submitted ? 'max-w-4xl' : 'max-w-5xl')}>
+          <div ref={refForm} className="reveal">
+            {submitted ? (
+              <div className="rounded-[4px] border border-[#dbdbdb] bg-white px-8 py-14 text-center shadow-[0_4px_5px_1px_rgba(193,193,193,0.2)] sm:px-12 sm:py-16 md:px-16 md:py-20 lg:px-20 lg:py-24">
+                <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-[#eef2ff] md:mb-8 md:h-16 md:w-16">
+                  <svg
+                    width="28"
+                    height="28"
+                    className="md:h-8 md:w-8"
+                    fill="none"
+                    stroke="#1f41ff"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    aria-hidden
                   >
-                    Nieuwe aanvraag
-                  </Button>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="naam">
-                        Naam <span className="text-destructive">*</span>
-                      </label>
-                      <input
-                        id="naam" name="naam" type="text" required
-                        value={form.naam} onChange={handleChange}
-                        placeholder="Jan de Vries"
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="bedrijf">
-                        Bedrijf / Company
-                      </label>
-                      <input
-                        id="bedrijf" name="bedrijf" type="text"
-                        value={form.bedrijf} onChange={handleChange}
-                        placeholder="Naam / Naam BV"
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="email">
-                        E-mailadres <span className="text-destructive">*</span>
-                      </label>
-                      <input
-                        id="email" name="email" type="email" required
-                        value={form.email} onChange={handleChange}
-                        placeholder="jan@voorbeeld.nl"
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="telefoon">
-                        Telefoonnummer <span className="text-destructive">*</span>
-                      </label>
-                      <input
-                        id="telefoon" name="telefoon" type="tel" required
-                        value={form.telefoon} onChange={handleChange}
-                        placeholder="06 1234 5678"
-                        className={inputClass}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="datum">
-                      Gewenste datum <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                      id="datum" name="datum" type="date" required
-                      value={form.datum} onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="tijdblok">
-                      Tijdblok / Timeslot <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      id="tijdblok" name="tijdblok" required
-                      value={form.tijdblok} onChange={handleChange}
-                      className={`${inputClass} appearance-none`}
-                    >
-                      <option value="">Kies een tijdblok...</option>
-                      {TIJDBLOKKEN.map(({ value, label }) => (
-                        <option key={value} value={value}>{label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="productie">
-                      Type productie / Opmerkingen
-                    </label>
-                    <textarea
-                      id="productie" name="productie" rows={5}
-                      value={form.productie} onChange={handleChange}
-                      placeholder="Vertel ons wat je gaat produceren, hoeveel mensen er aanwezig zijn en eventuele speciale wensen..."
-                      className={`${inputClass} resize-none`}
-                    />
-                  </div>
-
-                  <Button type="submit" size="lg" className="w-full rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
-                    Verstuur Aanvraag / Send Request
-                  </Button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    Tarieven zijn excl. 21% BTW / Prices are excl. 21% VAT.
-                  </p>
-                </form>
-              )}
-            </div>
-
-            {/* Sidebar — 1/3 */}
-            <div className="space-y-4">
-              <div className="bg-neutral-950 rounded-3xl p-6 text-white shadow-lg">
-                <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-3">Direct antwoord?</p>
-                <a href="tel:0621587273" className="text-2xl font-bold text-white hover:text-white/80 transition-colors block mb-1">
-                  06 2158 7273
-                </a>
-                <p className="text-white/50 text-sm">Urgent? / Need it fast?</p>
-                <p className="text-white/40 text-xs mt-1">07:30 – 23:00</p>
-              </div>
-
-              <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-sm">
-                <h3 className="font-bold text-neutral-900 mb-4">Tarieven snel bekijken</h3>
-                <div className="space-y-3">
-                  {[
-                    { blok: 'Ochtend', prijs: '€ 287,50' },
-                    { blok: 'Middag', prijs: '€ 287,50' },
-                    { blok: 'Hele dag', prijs: '€ 497,50' },
-                    { blok: 'Avond', prijs: '€ 195,00' },
-                    { blok: 'Weekend', prijs: 'Op aanvraag' },
-                  ].map(({ blok, prijs }) => (
-                    <div key={blok} className="flex justify-between text-sm border-b border-neutral-200 pb-2 last:border-0 last:pb-0">
-                      <span className="text-neutral-600">{blok}</span>
-                      <span className="font-semibold text-neutral-900">{prijs}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-3">Excl. 21% BTW. Inclusief faciliteiten, koffie & thee.</p>
-              </div>
-
-              <div className="bg-[#f2f2f2] border border-neutral-200/90 rounded-3xl p-6">
-                <h3 className="font-bold text-neutral-900 mb-2 text-sm">Adres</h3>
-                <p className="text-sm text-neutral-600 leading-relaxed">
-                  Veemarkt 31<br />
-                  1019 DA Amsterdam
+                <h3 className="font-body-dm font-semibold text-black text-xl tracking-[-0.02em] sm:text-2xl md:text-3xl mb-3 md:mb-4">
+                  Aanvraag ontvangen
+                </h3>
+                <p className="mx-auto max-w-xl font-roboto text-base leading-relaxed text-[#747474] md:text-lg md:leading-relaxed">
+                  Bedankt voor je boekingsaanvraag. We nemen zo snel mogelijk contact met je op ter bevestiging.
                 </p>
-                <AnchorButton
-                  href="https://maps.google.com/?q=Veemarkt+31,+Amsterdam"
-                  target="_blank" rel="noreferrer"
+                <p className="mx-auto mt-4 max-w-xl font-roboto text-sm text-[#747474] md:mt-5 md:text-base">
+                  Urgent? Bel{' '}
+                  <a
+                    href="tel:0621587273"
+                    className="font-medium text-[#1f41ff] underline-offset-2 hover:underline"
+                  >
+                    06 2158 7273
+                  </a>
+                </p>
+                <Button
+                  type="button"
                   variant="outline"
-                  className="rounded-full border-2 border-neutral-900 w-full justify-center mt-4 text-xs hover:bg-neutral-900 hover:text-white"
+                  className="mt-8 h-10 rounded-[3px] border-2 border-[#1f41ff] px-6 font-montserrat text-sm font-bold text-[#1f41ff] hover:bg-[#1f41ff] hover:text-white md:mt-10 md:h-11 md:px-8"
+                  onClick={() => {
+                    setSubmitted(false)
+                    setSelectedDate(undefined)
+                    setForm({ naam: '', bedrijf: '', email: '', telefoon: '', tijdblok: '', productie: '' })
+                  }}
                 >
-                  Route plannen
-                </AnchorButton>
+                  Nieuwe aanvraag
+                </Button>
               </div>
-            </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8 md:space-y-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor={`${idBase}-naam`} className={labelClass}>
+                        Naam <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id={`${idBase}-naam`}
+                        name="naam"
+                        required
+                        value={form.naam}
+                        onChange={handleInputChange}
+                        className={cn(controlBase, 'h-9 px-3')}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`${idBase}-bedrijf`} className={labelClass}>
+                        Bedrijf
+                      </Label>
+                      <Input
+                        id={`${idBase}-bedrijf`}
+                        name="bedrijf"
+                        value={form.bedrijf}
+                        onChange={handleInputChange}
+                        className={cn(controlBase, 'h-9 px-3')}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`${idBase}-email`} className={labelClass}>
+                        Email <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id={`${idBase}-email`}
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={form.email}
+                        onChange={handleInputChange}
+                        className={cn(controlBase, 'h-9 px-3')}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`${idBase}-telefoon`} className={labelClass}>
+                        Telefoon <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id={`${idBase}-telefoon`}
+                        name="telefoon"
+                        type="tel"
+                        autoComplete="tel"
+                        required
+                        value={form.telefoon}
+                        onChange={handleInputChange}
+                        className={cn(controlBase, 'h-9 px-3')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col min-h-0">
+                    <span className={labelClass}>Selecteer datum</span>
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                      <PopoverTrigger
+                        type="button"
+                        className={cn(
+                          controlBase,
+                          'relative isolate w-full flex items-center justify-between gap-2 px-3 h-9 font-body-dm font-medium text-left text-sm',
+                          !selectedDate && 'text-[#747474]',
+                        )}
+                      >
+                        <span className="truncate">{datumLabel}</span>
+                        <CalendarIcon className="size-4 shrink-0 text-[#1f41ff] opacity-80" aria-hidden />
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="z-[280] w-auto border border-[#dbdbdb] bg-white p-0 opacity-100 shadow-lg text-black"
+                        align="start"
+                        sideOffset={6}
+                      >
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={handleDateSelect}
+                          defaultMonth={selectedDate ?? new Date()}
+                          disabled={{ before: startOfToday() }}
+                          locale={nl}
+                          captionLayout="label"
+                          startMonth={CALENDAR_START_MONTH}
+                          endMonth={calendarEndMonth}
+                          components={{ MonthCaption: BookingMonthCaption }}
+                          classNames={{
+                            month_caption:
+                              'flex min-h-10 w-full items-stretch justify-center gap-2 bg-white px-0 py-1 opacity-100 relative z-20',
+                          }}
+                          className="bg-white p-2 opacity-100 text-black"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <input
+                      type="hidden"
+                      name="datum"
+                      value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''}
+                      aria-hidden
+                    />
+
+                    {selectedDate ? (
+                      <div
+                        className={cn(
+                          'relative isolate mt-3 flex flex-col rounded-[4px] border border-[#dbdbdb] bg-white p-3',
+                          'shadow-[0_4px_5px_1px_rgba(193,193,193,0.2)]',
+                        )}
+                      >
+                        <p className="font-body-dm font-semibold text-xs text-black mb-2">Tijdblok</p>
+                        <ScrollArea className="h-[220px] w-full lg:h-[260px]">
+                          <div className="space-y-1.5 pr-3">
+                          {displayedTimeSlots.map((slot) => {
+                            const selected = form.tijdblok === slot.value
+                            const prijsLabel = weekendDayPricing ? 'Op aanvraag' : slot.prijs
+                            return (
+                              <button
+                                key={slot.value}
+                                type="button"
+                                aria-pressed={selected}
+                                onClick={() => setForm((prev) => ({ ...prev, tijdblok: slot.value }))}
+                                className={cn(
+                                  'w-full border bg-white text-left rounded-[4px] px-2.5 py-2 text-xs transition-colors',
+                                  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#1f41ff]/35',
+                                  selected
+                                    ? 'border-[#1f41ff] bg-[#f8f9ff]'
+                                    : 'border-[#e8e8e8] hover:border-[#dbdbdb] shadow-[0_2px_4px_rgba(0,0,0,0.04)]',
+                                )}
+                              >
+                                <span className="font-body-dm font-semibold text-xs text-black">
+                                  {slot.title}
+                                </span>
+                                <span className="mt-0.5 block font-body-dm text-sm font-bold tabular-nums text-black">
+                                  {prijsLabel}
+                                </span>
+                                <span className="mt-0.5 block font-montserrat text-[10px] text-[#747474]">
+                                  {slot.tijd}
+                                </span>
+                              </button>
+                            )
+                          })}
+                          </div>
+                        </ScrollArea>
+                      </div>
+                    ) : null}
+                    <input type="hidden" name="tijdblok" value={form.tijdblok} />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor={`${idBase}-productie`} className={labelClass}>
+                    Opmerkingen
+                  </Label>
+                  <Textarea
+                    id={`${idBase}-productie`}
+                    name="productie"
+                    rows={3}
+                    value={form.productie}
+                    onChange={handleInputChange}
+                    className={cn(controlBase, 'w-full min-h-[72px] px-3 py-2 resize-y font-roboto')}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 pt-4 border-t border-[#ededed]">
+                  <div className="min-w-0">
+                    <p className="font-roboto text-[11px] font-medium uppercase tracking-wider text-[#747474] mb-1">
+                      Kosten voor geselecteerd blok
+                    </p>
+                    <p className="font-body-dm font-bold text-black text-lg tabular-nums tracking-tight">
+                      {kostenSummary.bedrag}
+                      {kostenSummary.showVatNote ? (
+                        <span className="font-roboto font-normal text-xs text-[#747474] ml-2">
+                          excl. 21% BTW
+                        </span>
+                      ) : null}
+                    </p>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    disabled={!selectedDate || !form.tijdblok}
+                    className={cn(
+                      'w-full sm:w-auto shrink-0 h-9 rounded-[3px] bg-[#1f41ff] hover:bg-[#1a38e0] text-white',
+                      'font-montserrat font-bold text-xs px-5',
+                      'disabled:opacity-40',
+                    )}
+                  >
+                    Verstuur aanvraag
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </section>

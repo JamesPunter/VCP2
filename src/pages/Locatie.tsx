@@ -1,173 +1,181 @@
+import { Car, SquareParking, TrainFront } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { useReveal } from '@/hooks/useReveal'
-import { PageHero } from '@/components/page-hero'
 
-const OV_OPTIONS = [
-  {
-    icon: '🚋',
-    title: 'Tram 26',
-    desc: 'Neem Tram 26 naar halte Rietlandpark, dan een korte wandeling naar de Veemarkt.',
-  },
-  {
-    icon: '🚌',
-    title: 'Bus 22',
-    desc: 'Neem Bus 22 vanaf Amsterdam Centraal Station naar halte Veemarkt.',
-  },
-  {
-    icon: '🚲',
-    title: 'OV-fiets',
-    desc: 'Huur een OV-fiets bij Centraal Station. Via de Piet Heijnkade en Panamalaan naar de Veemarkt — ca. 20 minuten.',
-  },
+const OV_LINES = [
+  'Tram 26: halte Rietlandpark, korte wandeling.',
+  'Bus 22: Centraal → halte Veemarkt.',
+  'OV-fiets vanaf CS: ca. 20 min.',
 ]
 
 const AUTO_STEPS = [
-  'Neem de Piet Heijntunnel exit (A10 afrit S114)',
-  'Bij de eerste verkeerslichten links afslaan',
-  'Bij de volgende verkeerslichten rechtdoor',
-  'Dan links en direct rechts het Veemarktterrein oprijden',
-  'Het kleine parkeerterrein voor de studio is direct zichtbaar',
+  'A10, afrit S114 (Piet Heijntunnel).',
+  'Eerste lichten links; volgende rechtdoor.',
+  'Daarna links, direct rechts het terrein op.',
 ]
 
+const PARK_LINES = [
+  'Betaald parkeren in de buurt; zondag vaak gratis.',
+  'Laden en lossen voor de deur: gratis.',
+]
+
+const MAP_EMBED =
+  'https://www.google.com/maps?q=Veemarkt+31,+1019+DA+Amsterdam&hl=nl&z=16&output=embed'
+
+const publicAssetUrl = (filename: string) => `${import.meta.env.BASE_URL}${filename}`
+
+const iconProps = {
+  className: 'size-[18px] shrink-0 text-[#747474] md:size-5',
+  strokeWidth: 1.5,
+  'aria-hidden': true as const,
+}
+
 export default function Locatie() {
-  const ref1 = useReveal()
-  const ref2 = useReveal()
+  const refHero = useReveal()
+  const refMap = useReveal()
+  const refImages = useReveal()
+  const refRoute = useReveal()
 
   return (
-    <>
-      <PageHero size="default">
-        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Locatie</p>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-4 max-w-3xl">
-          Amsterdam-Oost,<br />binnen de ring
-        </h1>
-        <p className="text-white/65 text-xl max-w-lg leading-relaxed">
-          Veemarkt 31, 1019 DA Amsterdam. Op nog geen 20 minuten fietsen van Centraal Station.
-        </p>
-      </PageHero>
+    <div className="bg-white">
+      <section className="relative bg-white pt-32 pb-8 md:pb-10">
+        <div ref={refHero} className="reveal mx-auto max-w-5xl px-6 text-center">
+          <h1 className="font-semicond font-black text-5xl leading-[1.05] tracking-tight text-black sm:text-6xl md:text-7xl">
+            Locatie
+          </h1>
+          <p className="mx-auto mt-6 max-w-3xl font-body-dm text-lg font-semibold leading-[1.2] tracking-[-0.02em] text-black sm:text-xl md:text-2xl">
+            Veemarkt 31, 1019 DA Amsterdam
+          </p>
+          <p className="mx-auto mt-4 max-w-2xl font-body-dm text-sm font-semibold leading-snug tracking-[-0.02em] text-[#595858] sm:text-base">
+            Goed bereikbaar met auto en OV; ca. 20 minuten fietsen vanaf Centraal.
+          </p>
+        </div>
+      </section>
 
-      <section className="py-16 md:py-20 bg-neutral-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div ref={ref1} className="reveal grid lg:grid-cols-5 gap-8 items-start">
-
-            {/* Map — wider */}
-            <div className="lg:col-span-3">
-              <div className="rounded-3xl overflow-hidden border border-neutral-200/90 shadow-md aspect-[4/3] bg-neutral-200">
-                <iframe
-                  title="Studio Le Garage locatie"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2436.4!2d4.9278!3d52.3625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c6099f08b5c4e1%3A0x0!2sVeemarkt%2031%2C%201019%20DA%20Amsterdam!5e0!3m2!1snl!2snl!4v1234567890"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-              <div className="mt-4 flex gap-3">
-                <a
-                  href="https://maps.google.com/?q=Veemarkt+31,+Amsterdam"
-                  target="_blank" rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-neutral-900 font-semibold hover:underline underline-offset-2"
-                >
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  Open in Google Maps
-                </a>
-              </div>
+      <section className="border-t border-[#ededed] pb-6 md:pb-8" aria-label="Kaart">
+        <div className="mx-auto max-w-[1280px] px-[clamp(1rem,4vw,2rem)] md:px-[clamp(1.5rem,6vw,4rem)]">
+          <div ref={refMap} className="reveal overflow-hidden rounded-[4px] border border-[#dbdbdb] bg-[#ededed] shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+            <div className="relative min-h-[min(68dvh,560px)] w-full md:min-h-[min(62dvh,680px)] lg:min-h-[min(58dvh,760px)]">
+              <iframe
+                title="Studio Le Garage op Google Maps"
+                src={MAP_EMBED}
+                width="100%"
+                height="100%"
+                className="absolute inset-0 size-full"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
-
-            {/* Info cards */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="bg-neutral-950 rounded-3xl p-6 text-white shadow-lg">
-                <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-3">Adres</p>
-                <p className="text-white font-bold text-lg">Veemarkt 31</p>
-                <p className="text-white/70">1019 DA Amsterdam</p>
-                <p className="text-white/50 text-sm mt-2">Amsterdam-Oost — binnen de A10 ring</p>
-              </div>
-
-              <div className="bg-white border border-neutral-200/90 rounded-3xl p-6 shadow-sm">
-                <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">Parkeren</p>
-                <ul className="space-y-2 text-sm text-neutral-800">
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-base">🅿️</span>
-                    <span>Betaald parkeren direct buiten</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-base">🆓</span>
-                    <span>Zondag: de hele dag gratis parkeren</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-base">🔌</span>
-                    <span>Elektrische laadpaal aanwezig</span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="text-base">🚚</span>
-                    <span>Gratis laden & lossen voor de deur</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-[#f2f2f2] border border-neutral-200/90 rounded-3xl p-5 text-center">
-                <p className="text-2xl mb-1">🚲</p>
-                <p className="font-semibold text-neutral-900 text-sm">~20 minuten fietsen</p>
-                <p className="text-xs text-neutral-600">vanaf Amsterdam Centraal Station</p>
-              </div>
-            </div>
+          </div>
+          <div className="mt-4 text-center md:mt-5">
+            <a
+              href="https://maps.google.com/?q=Veemarkt+31,+1019+DA+Amsterdam"
+              target="_blank"
+              rel="noreferrer"
+              className="font-body-dm text-xs text-[#595858] underline-offset-[3px] hover:text-[#1f41ff] hover:underline sm:text-sm"
+            >
+              Open in Google Maps
+            </a>
           </div>
         </div>
       </section>
 
-      {/* GETTING THERE */}
-      <section className="py-16 md:py-20 bg-white border-t border-neutral-200/80">
-        <div className="max-w-6xl mx-auto px-6">
-          <div ref={ref2} className="reveal grid md:grid-cols-2 gap-12">
+      <section
+        className="mx-auto max-w-[1280px] px-[clamp(1.5rem,8vw,7rem)] pb-[clamp(1.5rem,4vw,2.5rem)] pt-2"
+        aria-label="Impressie"
+      >
+        <div ref={refImages} className="reveal mx-auto flex w-full justify-center">
+          <figure className="relative aspect-video w-full max-w-[520px] overflow-hidden bg-neutral-200">
+            <img
+              src={publicAssetUrl('veemarkt.jpg')}
+              alt="Het pand aan de Veemarkt in Amsterdam: rode baksteen, witte banden en groen rondom."
+              className="size-full object-cover object-center"
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 640px) 100vw, 520px"
+            />
+          </figure>
+        </div>
+      </section>
 
-            {/* Public transport */}
-            <div>
-              <p className="text-sm font-semibold text-neutral-900 uppercase tracking-widest mb-3">Openbaar vervoer</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Met het OV</h2>
-              <div className="space-y-4">
-                {OV_OPTIONS.map(({ icon, title, desc }) => (
-                  <div key={title} className="bg-neutral-50 rounded-3xl border border-neutral-200/90 p-5 flex items-start gap-4 hover:shadow-sm transition-shadow">
-                    <span className="text-2xl flex-shrink-0">{icon}</span>
-                    <div>
-                      <h3 className="font-semibold text-neutral-900 text-sm mb-1">{title}</h3>
-                      <p className="text-sm text-neutral-600 leading-relaxed">{desc}</p>
-                    </div>
-                  </div>
-                ))}
+      <section className="bg-white pb-16 pt-12 md:pb-24 md:pt-16">
+        <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-14">
+          <div
+            ref={refRoute}
+            className="reveal grid grid-cols-1 gap-14 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-0 md:gap-x-10 lg:gap-x-12"
+          >
+            <div className="min-w-0 px-1 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4 lg:px-6">
+              <div className="mb-6 flex items-center gap-3 text-[#747474] md:mb-7">
+                <TrainFront {...iconProps} />
+                <h2 className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-[#747474] md:text-xs">
+                  Openbaar vervoer
+                </h2>
               </div>
+              <ul className="space-y-3 md:space-y-3.5">
+                {OV_LINES.map((line) => (
+                  <li
+                    key={line}
+                    className="font-roboto text-xs leading-relaxed text-[#747474] md:text-[13px]"
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* By car */}
-            <div>
-              <p className="text-sm font-semibold text-neutral-900 uppercase tracking-widest mb-3">Met de auto</p>
-              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Rijroute vanaf A10</h2>
-              <div className="space-y-3">
+            <div className="min-w-0 px-1 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4 lg:px-6">
+              <div className="mb-6 flex items-center gap-3 text-[#747474] md:mb-7">
+                <Car {...iconProps} />
+                <h2 className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-[#747474] md:text-xs">
+                  Auto
+                </h2>
+              </div>
+              <ol className="space-y-3 md:space-y-3.5">
                 {AUTO_STEPS.map((step, i) => (
-                  <div key={i} className="flex items-start gap-4 bg-neutral-50 rounded-3xl border border-neutral-200/90 p-4">
-                    <div className="w-7 h-7 rounded-full bg-neutral-900 text-white flex items-center justify-center flex-shrink-0 text-xs font-bold">
-                      {i + 1}
-                    </div>
-                    <p className="text-sm text-neutral-800 leading-relaxed pt-0.5">{step}</p>
-                  </div>
+                  <li
+                    key={step}
+                    className="font-roboto text-xs leading-relaxed text-[#747474] md:text-[13px]"
+                  >
+                    <span className="tabular-nums text-[#595858]">{i + 1}. </span>
+                    {step}
+                  </li>
                 ))}
-              </div>
+              </ol>
+            </div>
 
-              <div className="mt-5 bg-neutral-50 border border-neutral-200/90 rounded-3xl p-4 text-sm text-neutral-600">
-                <strong className="text-neutral-900">Tip:</strong> Via Afrit S114, direct na de Piet Heijntunnel. "Voor u bevindt zich een klein parkeerterrein — daar is onze studio gevestigd."
+            <div className="min-w-0 px-1 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4 lg:px-6">
+              <div className="mb-6 flex items-center gap-3 text-[#747474] md:mb-7">
+                <SquareParking {...iconProps} />
+                <h2 className="font-montserrat text-[11px] font-semibold uppercase tracking-[0.14em] text-[#747474] md:text-xs">
+                  Parkeren
+                </h2>
               </div>
+              <ul className="space-y-3 md:space-y-3.5">
+                {PARK_LINES.map((line) => (
+                  <li
+                    key={line}
+                    className="font-roboto text-xs leading-relaxed text-[#747474] md:text-[13px]"
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          <div className="mt-12 text-center">
-            <LinkButton to="/reserveren" size="lg" className="rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
+          <div className="mt-16 flex justify-center md:mt-20">
+            <LinkButton
+              to="/reserveren"
+              variant="ghost"
+              className="inline-flex h-10 items-center justify-center rounded-[3px] border-2 border-[#1f41ff] bg-[#1f41ff] px-8 font-montserrat text-xs font-bold text-white hover:border-[#1a38e0] hover:bg-[#1a38e0]"
+            >
               Reserveer de studio
             </LinkButton>
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

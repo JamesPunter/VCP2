@@ -12,6 +12,17 @@ const HERO_IMAGE = {
   alt: "Acteur voor een camera tijdens een auditie-opname in de studio.",
 };
 
+const STUDIO_IMPRESSIONS = [
+  {
+    file: "caucasian-woman-girl-practising-ballet.jpg",
+    alt: "Ballet in de studio: benen en voeten van een volwassene en kind bij de barre, zwart-wit.",
+  },
+  {
+    file: "home-hero-dance.jpg",
+    alt: "Groep jonge dansers op het podium tijdens een energieke voorstelling, zwart-wit.",
+  },
+] as const;
+
 export default function Home() {
   const { t } = useLanguage();
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -151,17 +162,22 @@ export default function Home() {
         className="mx-auto max-w-[1280px] px-[clamp(1.5rem,8vw,7rem)] pb-[clamp(3.5rem,8vw,6.5rem)]"
         aria-label="Studio impressie"
       >
-        <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2">
-          <div
-            className="aspect-[305/383] w-full max-w-[305px] bg-[#d9d9d9]"
-            role="img"
-            aria-label="Studio impressie 1"
-          />
-          <div
-            className="aspect-[305/383] w-full max-w-[305px] bg-[#d9d9d9]"
-            role="img"
-            aria-label="Studio impressie 2"
-          />
+        <div className="grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:place-items-stretch sm:justify-items-center">
+          {STUDIO_IMPRESSIONS.map(({ file, alt }) => (
+            <figure
+              key={file}
+              className="relative aspect-[305/383] w-full max-w-[480px] overflow-hidden bg-neutral-200"
+            >
+              <img
+                src={heroPublicUrl(file)}
+                alt={alt}
+                className="size-full object-cover object-center"
+                loading="lazy"
+                decoding="async"
+                sizes="(max-width: 640px) 100vw, 480px"
+              />
+            </figure>
+          ))}
         </div>
       </section>
     </div>

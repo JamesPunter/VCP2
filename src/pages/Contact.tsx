@@ -1,63 +1,50 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { AnchorButton, LinkButton } from '@/components/ui/link-button'
-import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { LinkButton } from '@/components/ui/link-button'
 import { useReveal } from '@/hooks/useReveal'
-import { PageHero } from '@/components/page-hero'
+import { cn } from '@/lib/utils'
 
-const CONTACT_ITEMS = [
+const CONTACT_LINES: { label?: 'Mobiel' | 'Kantoor'; value: string; href: string }[] = [
+  { label: 'Mobiel', value: '06 2158 7273', href: 'tel:0621587273' },
+  { label: 'Kantoor', value: '020 625 35 13', href: 'tel:0206253513' },
+  { value: 'info@studiolegarage.nl', href: 'mailto:info@studiolegarage.nl' },
   {
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-    ),
-    label: 'Mobiel',
-    value: '06 2158 7273',
-    href: 'tel:0621587273',
-    accent: 'bg-neutral-100 text-neutral-800',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-    ),
-    label: 'Kantoor',
-    value: '020 625 35 13',
-    href: 'tel:0206253513',
-    accent: 'bg-neutral-200/80 text-neutral-800',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-        <polyline points="22,6 12,13 2,6"/>
-      </svg>
-    ),
-    label: 'E-mail',
-    value: 'info@studiolegarage.nl',
-    href: 'mailto:info@studiolegarage.nl',
-    accent: 'bg-neutral-100 text-neutral-800',
-  },
-  {
-    icon: (
-      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
-    ),
-    label: 'Adres',
     value: 'Veemarkt 31, 1019 DA Amsterdam',
     href: 'https://maps.google.com/?q=Veemarkt+31,+Amsterdam',
-    accent: 'bg-neutral-100 text-neutral-800',
   },
 ]
 
+const labelClass =
+  'font-body-dm font-semibold text-black text-sm tracking-[-0.02em] mb-1.5'
+
+const controlBase =
+  'rounded-[4px] border border-[#dbdbdb] bg-white text-sm text-black placeholder:text-[#747474] shadow-[0_2px_4px_rgba(0,0,0,0.04)] focus-visible:border-[#1f41ff] focus-visible:ring-1 focus-visible:ring-[#1f41ff]/30'
+
+const bannerLinkClass =
+  'underline decoration-solid underline-offset-[3px] hover:opacity-90 whitespace-nowrap'
+
+const publicAssetUrl = (filename: string) => `${import.meta.env.BASE_URL}${filename}`
+
+const CONTACT_IMPRESSIONS = [
+  {
+    file: 'dansvloer.jpg',
+    alt: 'Dansstudio met parketvloer, spiegelwanden en een witte paal.',
+  },
+  {
+    file: 'dansvloer-boven.jpg',
+    alt: 'Dansstudio van bovenaf: parketvloer en spiegelwanden.',
+  },
+] as const
+
 export default function Contact() {
-  const ref1 = useReveal()
-  const ref2 = useReveal()
+  const refHero = useReveal()
+  const refBody = useReveal()
+  const refImages = useReveal()
+  const refCta = useReveal()
 
   const [form, setForm] = useState({ naam: '', email: '', telefoon: '', bericht: '' })
   const [submitted, setSubmitted] = useState(false)
@@ -71,198 +58,207 @@ export default function Contact() {
     setSubmitted(true)
   }
 
-  const inputClass = 'w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900/15 focus:border-neutral-900 transition-all'
-
   return (
-    <>
-      <PageHero size="default">
-        <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-4">Contact</p>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] mb-4 max-w-3xl">
-          Neem contact op
-        </h1>
-        <p className="text-white/65 text-xl max-w-lg leading-relaxed">
-          Vragen over de studio, beschikbaarheid of tarieven? We zijn bereikbaar van 07:30 tot 23:00.
-        </p>
-      </PageHero>
+    <div className="bg-white">
+      <section className="relative bg-white pt-32 pb-10 md:pb-14">
+        <div ref={refHero} className="reveal mx-auto max-w-5xl px-6 text-center">
+          <h1 className="font-semicond font-black text-5xl leading-[1.05] tracking-tight text-black sm:text-6xl md:text-7xl">
+            Contact
+          </h1>
+          <p className="mx-auto mt-6 max-w-3xl font-body-dm text-lg font-semibold leading-[1.15] tracking-[-0.02em] text-black sm:text-xl md:mt-8 md:text-2xl">
+            Vragen over de studio, beschikbaarheid of tarieven? We helpen je graag.
+          </p>
+        </div>
+      </section>
 
-      <section className="py-12 md:py-14 bg-neutral-50 border-b border-neutral-200/80">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {CONTACT_ITEMS.map(({ icon, label, value, href, accent }) => (
+      <section className="bg-white pb-16 md:pb-24">
+        <div className="mx-auto max-w-5xl px-6">
+          <div ref={refBody} className="reveal mx-auto max-w-3xl">
+            <h2 className="text-center font-body-dm text-xl font-semibold tracking-[-0.02em] text-black md:text-2xl">
+              Stuur een bericht
+            </h2>
+            <p className="mt-3 text-center font-roboto text-sm leading-relaxed text-[#747474] md:text-[15px]">
+              Voor een boeking gebruik je de{' '}
+              <Link
+                to="/reserveren"
+                className="font-medium text-[#1f41ff] underline-offset-2 hover:underline"
+              >
+                reserveringspagina
+              </Link>
+              .
+            </p>
+
+            {submitted ? (
+              <div className="mt-8 rounded-[4px] border border-[#dbdbdb] bg-white px-8 py-12 text-center shadow-[0_4px_5px_1px_rgba(193,193,193,0.2)]">
+                <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full bg-[#eef2ff]">
+                  <svg
+                    width="28"
+                    height="28"
+                    fill="none"
+                    stroke="#1f41ff"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <h3 className="font-body-dm text-lg font-semibold tracking-[-0.02em] text-black md:text-xl">
+                  Bericht ontvangen
+                </h3>
+                <p className="mx-auto mt-3 max-w-md font-roboto text-sm text-[#747474]">
+                  We nemen zo snel mogelijk contact met je op.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-8 h-10 rounded-[3px] border-2 border-[#1f41ff] px-6 font-montserrat text-sm font-bold text-[#1f41ff] hover:bg-[#1f41ff] hover:text-white"
+                  onClick={() => {
+                    setSubmitted(false)
+                    setForm({ naam: '', email: '', telefoon: '', bericht: '' })
+                  }}
+                >
+                  Nieuw bericht
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="mt-8 space-y-4 md:space-y-5">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="contact-naam" className={labelClass}>
+                      Naam <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="contact-naam"
+                      name="naam"
+                      required
+                      value={form.naam}
+                      onChange={handleChange}
+                      className={cn(controlBase, 'h-9 px-3')}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contact-telefoon" className={labelClass}>
+                      Telefoon
+                    </Label>
+                    <Input
+                      id="contact-telefoon"
+                      name="telefoon"
+                      type="tel"
+                      value={form.telefoon}
+                      onChange={handleChange}
+                      className={cn(controlBase, 'h-9 px-3')}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="contact-email" className={labelClass}>
+                    E-mail <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={form.email}
+                    onChange={handleChange}
+                    className={cn(controlBase, 'h-9 px-3')}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact-bericht" className={labelClass}>
+                    Bericht <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    id="contact-bericht"
+                    name="bericht"
+                    required
+                    rows={5}
+                    value={form.bericht}
+                    onChange={handleChange}
+                    className={cn(controlBase, 'min-h-[120px] resize-y px-3 py-2 font-roboto')}
+                  />
+                </div>
+                <div className="pt-2">
+                  <Button
+                    type="submit"
+                    className="h-9 w-full rounded-[3px] bg-[#1f41ff] font-montserrat text-xs font-bold text-white hover:bg-[#1a38e0] sm:w-auto sm:px-8"
+                  >
+                    Verstuur bericht
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full bg-[#1f41ff] text-white" aria-label="Contactgegevens">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-center gap-4 px-6 py-4 text-[clamp(0.95rem,1.4vw,1.25rem)] font-semibold tracking-[-0.02em] sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3 md:py-[18px] lg:gap-x-12">
+          {CONTACT_LINES.map(({ label, value, href }) => (
+            <p
+              key={href}
+              className="flex flex-wrap items-baseline justify-center gap-x-1.5 text-center"
+              style={{ fontFamily: 'var(--font-semicond)' }}
+            >
+              {label ? <span className="text-white/85">{label}:</span> : null}
               <a
-                key={label}
                 href={href}
                 target={href.startsWith('http') ? '_blank' : undefined}
                 rel={href.startsWith('http') ? 'noreferrer' : undefined}
-                className="bg-white rounded-3xl border border-neutral-200/90 p-5 flex items-start gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group"
+                className={bannerLinkClass}
               >
-                <div className={`w-10 h-10 rounded-2xl ${accent} flex items-center justify-center flex-shrink-0`}>
-                  {icon}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-neutral-500 font-medium mb-0.5">{label}</p>
-                  <p className="font-semibold text-neutral-900 text-sm group-hover:underline underline-offset-2 transition-colors truncate">{value}</p>
-                </div>
+                {value}
               </a>
-            ))}
-          </div>
+            </p>
+          ))}
         </div>
       </section>
 
-      {/* FORM + INFO */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
-          <div ref={ref1} className="reveal grid lg:grid-cols-2 gap-12">
-
-            {/* Form */}
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Stuur een bericht</h2>
-              <p className="text-muted-foreground mb-7 leading-relaxed">
-                Wil je een vraag stellen of informatie ontvangen? Gebruik het formulier hieronder. Voor reserveringen gebruik je de{' '}
-                <Link to="/reserveren" className="text-neutral-900 font-semibold hover:underline underline-offset-2">reserveringspagina</Link>.
-              </p>
-
-              {submitted ? (
-                <div className="bg-green-50 border border-green-200/80 rounded-3xl p-8 text-center">
-                  <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-green-600">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <h3 className="font-bold text-foreground text-lg mb-2">Bericht ontvangen!</h3>
-                  <p className="text-muted-foreground text-sm">We nemen zo snel mogelijk contact met je op.</p>
-                  <Button variant="outline" className="mt-5 rounded-full border-2 border-neutral-900"
-                    onClick={() => { setSubmitted(false); setForm({ naam: '', email: '', telefoon: '', bericht: '' }) }}>
-                    Nieuw bericht
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="naam">
-                        Naam <span className="text-destructive">*</span>
-                      </label>
-                      <input id="naam" name="naam" type="text" required
-                        value={form.naam} onChange={handleChange}
-                        placeholder="Jan de Vries" className={inputClass} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="telefoon">
-                        Telefoon
-                      </label>
-                      <input id="telefoon" name="telefoon" type="tel"
-                        value={form.telefoon} onChange={handleChange}
-                        placeholder="06 1234 5678" className={inputClass} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="email">
-                      E-mailadres <span className="text-destructive">*</span>
-                    </label>
-                    <input id="email" name="email" type="email" required
-                      value={form.email} onChange={handleChange}
-                      placeholder="jan@voorbeeld.nl" className={inputClass} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1.5" htmlFor="bericht">
-                      Bericht <span className="text-destructive">*</span>
-                    </label>
-                    <textarea id="bericht" name="bericht" required rows={5}
-                      value={form.bericht} onChange={handleChange}
-                      placeholder="Je vraag of opmerking..."
-                      className={`${inputClass} resize-none`} />
-                  </div>
-                  <Button type="submit" size="lg" className="w-full rounded-full bg-neutral-900 hover:bg-neutral-800 text-white">
-                    Verstuur bericht
-                  </Button>
-                </form>
-              )}
-            </div>
-
-            {/* Info */}
-            <div className="space-y-5">
-              <div className="bg-neutral-950 rounded-3xl p-7 text-white shadow-lg">
-                <h3 className="font-bold text-white text-lg mb-4">Bereikbaarheid</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between border-b border-white/10 pb-3">
-                    <span className="text-white/60">Maandag – Vrijdag</span>
-                    <span className="font-medium text-white">07:30 – 23:00</span>
-                  </div>
-                  <div className="flex justify-between border-b border-white/10 pb-3">
-                    <span className="text-white/60">Zaterdag</span>
-                    <span className="font-medium text-white">07:30 – 23:00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/60">Zondag</span>
-                    <span className="font-medium text-white">07:30 – 23:00</span>
-                  </div>
-                </div>
-                <p className="text-white/40 text-xs mt-4">KvK Amsterdam: 33252574</p>
-              </div>
-
-              <div className="bg-neutral-50 border border-neutral-200/90 rounded-3xl p-6">
-                <h3 className="font-bold text-neutral-900 mb-2">Social media</h3>
-                <p className="text-sm text-neutral-600 mb-4">Volg ons voor inspiratie en updates:</p>
-                <div className="flex gap-3">
-                  <AnchorButton
-                    href="https://facebook.com/studiolegarage"
-                    target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                  >
-                    Facebook
-                  </AnchorButton>
-                  <AnchorButton
-                    href="https://instagram.com/studiolegarage"
-                    target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                  >
-                    Instagram
-                  </AnchorButton>
-                  <AnchorButton
-                    href="https://linkedin.com/company/studiolegarage"
-                    target="_blank" rel="noreferrer"
-                    variant="outline" className="rounded-full flex-1 justify-center text-xs border-2 border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                  >
-                    LinkedIn
-                  </AnchorButton>
-                </div>
-              </div>
-
-              <div className="bg-[#f2f2f2] border border-neutral-200/90 rounded-3xl p-5 flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
-                  Mobiel: 06 2158 7273
-                </Badge>
-                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
-                  info@studiolegarage.nl
-                </Badge>
-                <Badge variant="outline" className="text-neutral-800 border-neutral-300 bg-white">
-                  Veemarkt 31, Amsterdam
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* QUICK CTA */}
-      <section className="py-10 bg-foreground">
-        <div ref={ref2} className="reveal max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-white font-bold text-lg mb-1">Direct reserveren?</h3>
-              <p className="text-white/60 text-sm">Gebruik ons boekingsformulier voor een aanvraag.</p>
-            </div>
-            <LinkButton
-              to="/reserveren"
-              size="lg"
-              className="rounded-full bg-white text-neutral-900 hover:bg-white/90"
+      <section
+        className="mx-auto max-w-[1280px] px-[clamp(1.5rem,8vw,7rem)] pt-[clamp(2.5rem,6vw,4.5rem)] pb-[clamp(2rem,4vw,3rem)]"
+        aria-label="Impressie"
+      >
+        <div
+          ref={refImages}
+          className="reveal grid grid-cols-1 place-items-center gap-8 sm:grid-cols-2 sm:place-items-stretch sm:justify-items-center"
+        >
+          {CONTACT_IMPRESSIONS.map(({ file, alt }) => (
+            <figure
+              key={file}
+              className="relative aspect-[305/383] w-full max-w-[480px] overflow-hidden bg-neutral-200"
             >
-              Naar reserveringspagina
-            </LinkButton>
-          </div>
+              <img
+                src={publicAssetUrl(file)}
+                alt={alt}
+                className="size-full object-cover object-center"
+                loading="lazy"
+                decoding="async"
+                sizes="(max-width: 640px) 100vw, 480px"
+              />
+            </figure>
+          ))}
         </div>
       </section>
-    </>
+
+      <section className="bg-[#1f41ff] py-10 text-white md:py-12" aria-label="Reserveren">
+        <div ref={refCta} className="reveal mx-auto flex max-w-5xl flex-col items-center justify-between gap-6 px-6 md:flex-row">
+          <div className="text-center md:text-left">
+            <h3 className="font-body-dm text-lg font-semibold">Direct reserveren?</h3>
+            <p className="mt-1 font-roboto text-sm text-white/80">
+              Gebruik het boekingsformulier voor een aanvraag.
+            </p>
+          </div>
+          <LinkButton
+            to="/reserveren"
+            variant="ghost"
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-[3px] border-2 border-white bg-white px-8 font-montserrat text-xs font-bold text-[#1f41ff] hover:bg-white/90"
+          >
+            Naar reserveren
+          </LinkButton>
+        </div>
+      </section>
+    </div>
   )
 }
